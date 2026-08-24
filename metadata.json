@@ -1,0 +1,6 @@
+{
+  "name": "Jejak Tugas & Bacaan",
+  "description": "Aplikasi manajemen dan pembaca tugas belajar yang efisien dengan dashboard produktivitas, pencatat materi, dan sistem kelola tugas yang ringkas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
