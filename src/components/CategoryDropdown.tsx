@@ -93,14 +93,13 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
         onClick={() => setIsOpen(prev => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        style={{ borderColor: '#E2E8F0' }}
-        className={`w-full flex items-center justify-between gap-2.5 bg-white text-slate-700 font-medium rounded-lg text-sm transition-all duration-150 border hover:border-slate-300 hover:bg-slate-50/70 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-400 cursor-pointer ${
+        className={`w-full flex items-center justify-between gap-2.5 bg-white text-slate-800 font-medium rounded-xl text-sm transition-all duration-150 border border-slate-200 shadow-sm hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 cursor-pointer ${
           size === 'sm' ? 'py-1.5 px-3 text-xs' : 'py-2 px-3.5'
-        } ${isOpen ? 'ring-2 ring-stone-900/10 border-stone-400 bg-white' : ''}`}
+        } ${isOpen ? 'ring-2 ring-amber-500/20 border-amber-500/50 bg-white' : ''}`}
       >
         <div className="flex items-center gap-2 min-w-0 truncate">
           <SelectedIcon className={`shrink-0 text-slate-500 ${size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
-          <span className="truncate text-slate-700 font-medium">
+          <span className="truncate text-slate-800 font-medium">
             {selectedOption ? selectedOption.label : placeholder}
           </span>
         </div>
@@ -108,7 +107,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
         <ChevronDown 
           className={`shrink-0 text-slate-400 transition-transform duration-200 ${
             size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'
-          } ${isOpen ? 'rotate-180 text-stone-900' : ''}`} 
+          } ${isOpen ? 'rotate-180 text-amber-500' : ''}`} 
         />
       </button>
 
@@ -117,7 +116,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
         <div
           id="category-dropdown-menu"
           role="listbox"
-          className="absolute left-0 mt-1.5 w-56 sm:w-60 bg-white rounded-xl border border-slate-100 shadow-xl z-50 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-100 origin-top-left"
+          className="absolute left-0 mt-1.5 w-56 sm:w-60 bg-white rounded-2xl border border-slate-100 shadow-xl z-50 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-100 origin-top-left"
         >
           <div className="max-h-64 overflow-y-auto divide-y divide-slate-50">
             {options.map((option) => {
@@ -136,21 +135,21 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                   }}
                   className={`w-full flex items-center justify-between text-left px-3.5 py-2.5 text-sm transition-colors duration-150 cursor-pointer ${
                     isSelected
-                      ? 'bg-slate-100 text-slate-900 font-medium'
+                      ? 'bg-amber-50/60 text-amber-500 font-semibold'
                       : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <IconComp 
                       className={`w-4 h-4 shrink-0 transition-colors ${
-                        isSelected ? 'text-stone-900' : 'text-slate-400 group-hover:text-slate-600'
+                        isSelected ? 'text-amber-500' : 'text-slate-400 group-hover:text-slate-600'
                       }`} 
                     />
                     <span className="truncate">{option.label}</span>
                   </div>
 
                   {isSelected && (
-                    <Check className="w-4 h-4 text-stone-900 shrink-0 ml-2 stroke-[2.5]" />
+                    <Check className="w-4 h-4 text-amber-500 shrink-0 ml-2 stroke-[2.5]" />
                   )}
                 </button>
               );

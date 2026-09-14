@@ -74,15 +74,15 @@ export const QuickFocusTimer: React.FC<QuickFocusTimerProps> = ({ tasks, onTaskC
   const isFinished = timeLeft === 0;
 
   return (
-    <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-sm space-y-4 relative">
+    <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4 relative">
       
       {/* Top Header with Generous Padding & Badges */}
       <div className="flex items-center justify-between gap-2 pt-1">
         <div className="flex items-center gap-2.5">
           <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 ${
             isRunning 
-              ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30 ring-2 ring-amber-400/50 scale-105' 
-              : 'bg-stone-100 text-stone-700'
+              ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30 ring-2 ring-amber-400/50 scale-105 font-bold' 
+              : 'bg-slate-100 text-slate-700'
           }`}>
             <Timer className={`w-4 h-4 ${isRunning ? 'animate-pulse' : ''}`} />
           </div>
@@ -125,7 +125,7 @@ export const QuickFocusTimer: React.FC<QuickFocusTimerProps> = ({ tasks, onTaskC
             <button
               type="button"
               onClick={() => setIsDropdownOpen(prev => !prev)}
-              className="w-full flex items-center justify-between gap-2 py-2 px-3 bg-slate-50 hover:bg-slate-100/90 text-slate-800 border border-slate-200/90 rounded-xl text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-stone-900/10 cursor-pointer shadow-2xs"
+              className="w-full flex items-center justify-between gap-2 py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 rounded-xl text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/20 cursor-pointer shadow-2xs"
             >
               <div className="flex items-center gap-2 min-w-0 truncate">
                 <span className={`w-2 h-2 rounded-full shrink-0 ${getPriorityDot(selectedTask?.priority)}`} />
@@ -159,12 +159,12 @@ export const QuickFocusTimer: React.FC<QuickFocusTimerProps> = ({ tasks, onTaskC
                         setIsDropdownOpen(false);
                       }}
                       className={`w-full flex items-center justify-between text-left px-3 py-2 text-xs transition-colors cursor-pointer ${
-                        isSelected ? 'bg-amber-50/80 font-bold text-slate-900' : 'hover:bg-slate-50 text-slate-700'
+                        isSelected ? 'bg-amber-50 font-bold text-slate-900' : 'hover:bg-slate-50 text-slate-700'
                       }`}
                     >
                       <div className="flex items-center gap-2 min-w-0 pr-2">
                         <span className={`w-2 h-2 rounded-full shrink-0 ${getPriorityDot(t.priority)}`} />
-                        <span className="text-[10px] font-mono font-bold text-amber-700 bg-stone-100 px-1 py-0.2 rounded shrink-0">
+                        <span className="text-[10px] font-mono font-bold text-amber-700 bg-slate-100 px-1 py-0.2 rounded shrink-0">
                           [{t.category}]
                         </span>
                         <span className="truncate">{t.title}</span>
@@ -195,7 +195,7 @@ export const QuickFocusTimer: React.FC<QuickFocusTimerProps> = ({ tasks, onTaskC
               onClick={() => setMode(key)}
               className={`flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-white text-stone-900 shadow-xs font-bold'
+                  ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -207,12 +207,12 @@ export const QuickFocusTimer: React.FC<QuickFocusTimerProps> = ({ tasks, onTaskC
       </div>
 
       {/* Timer Display Card with Circular Progress Ring & Glow */}
-      <div className={`bg-gradient-to-b from-slate-900 via-stone-900 to-slate-950 text-white rounded-2xl p-4 sm:p-5 text-center relative overflow-hidden shadow-inner transition-all duration-500 border ${
+      <div className={`bg-[#0F172A] text-white rounded-xl p-4 sm:p-5 text-center relative overflow-hidden shadow-inner transition-all duration-500 border ${
         isRunning 
           ? 'border-amber-500/50 shadow-lg shadow-amber-500/10 ring-1 ring-amber-400/30' 
           : isPaused
             ? 'border-emerald-500/40 ring-1 ring-emerald-500/20'
-            : 'border-stone-800'
+            : 'border-slate-800'
       }`}>
         {/* Glow backdrop during active state */}
         <div className={`absolute inset-0 bg-amber-500/15 transition-opacity duration-500 blur-xl ${isRunning ? 'opacity-100 animate-pulse' : 'opacity-0'}`} />
@@ -257,7 +257,7 @@ export const QuickFocusTimer: React.FC<QuickFocusTimerProps> = ({ tasks, onTaskC
                 cx="60"
                 cy="60"
                 r={ringRadius}
-                className={`transition-all duration-1000 ease-linear ${
+                className={`transition-all duration-300 ease-out ${
                   isRunning ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' : isPaused ? 'text-emerald-400' : 'text-orange-400'
                 }`}
                 strokeWidth="7"
@@ -293,7 +293,7 @@ export const QuickFocusTimer: React.FC<QuickFocusTimerProps> = ({ tasks, onTaskC
                   ? 'bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/25 font-semibold'
                   : isPaused
                     ? 'bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-500/20'
-                    : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg shadow-amber-500/25 border-0'
+                    : 'bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold shadow-lg shadow-amber-400/30 border border-amber-300'
               }`}
             >
               {isRunning ? (

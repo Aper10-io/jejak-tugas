@@ -27,7 +27,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav 
       aria-label="Mobile Navigation Bar"
-      className="flex sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 py-1.5 px-2 shadow-lg transition-all"
+      className="flex sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 py-1 px-2 shadow-lg transition-all"
     >
       <div className="grid grid-cols-4 w-full max-w-md mx-auto gap-1">
         
@@ -41,11 +41,11 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           }}
           className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer ${
             currentView === 'dashboard' && !isProfileOpen
-              ? 'text-stone-950 font-bold bg-stone-100/90 shadow-2xs'
-              : 'text-stone-500 hover:text-stone-800'
+              ? 'text-slate-950 font-semibold bg-slate-100/90 shadow-2xs'
+              : 'text-slate-400 hover:text-slate-700'
           }`}
         >
-          <LayoutDashboard className={`w-5 h-5 ${currentView === 'dashboard' && !isProfileOpen ? 'stroke-[2.5] text-stone-900' : 'stroke-[1.75]'}`} />
+          <LayoutDashboard className={`w-5 h-5 ${currentView === 'dashboard' && !isProfileOpen ? 'stroke-[2.5] text-slate-950' : 'stroke-[1.75] text-slate-400'}`} />
           <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">Dashboard</span>
         </button>
 
@@ -59,14 +59,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           }}
           className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer ${
             currentView === 'tugas' && !isProfileOpen
-              ? 'text-stone-950 font-bold bg-stone-100/90 shadow-2xs'
-              : 'text-stone-500 hover:text-stone-800'
+              ? 'text-slate-950 font-semibold bg-slate-100/90 shadow-2xs'
+              : 'text-slate-400 hover:text-slate-700'
           }`}
         >
           <div className="relative">
-            <CheckSquare className={`w-5 h-5 ${currentView === 'tugas' && !isProfileOpen ? 'stroke-[2.5] text-stone-900' : 'stroke-[1.75]'}`} />
+            <CheckSquare className={`w-5 h-5 ${currentView === 'tugas' && !isProfileOpen ? 'stroke-[2.5] text-slate-950' : 'stroke-[1.75] text-slate-400'}`} />
             {activeCount > 0 && (
-              <span className="absolute -top-1 -right-2.5 min-w-4 h-4 px-1 bg-amber-500 text-white rounded-full text-[9px] font-mono font-bold flex items-center justify-center shadow-2xs">
+              <span className="absolute -top-1 -right-2.5 min-w-4 h-4 px-1 bg-amber-500 text-slate-950 rounded-full text-[9px] font-mono font-bold flex items-center justify-center shadow-2xs">
                 {activeCount > 9 ? '9+' : activeCount}
               </span>
             )}
@@ -84,11 +84,11 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           }}
           className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer ${
             currentView === 'baca' && !isProfileOpen
-              ? 'text-stone-950 font-bold bg-stone-100/90 shadow-2xs'
-              : 'text-stone-500 hover:text-stone-800'
+              ? 'text-slate-950 font-semibold bg-slate-100/90 shadow-2xs'
+              : 'text-slate-400 hover:text-slate-700'
           }`}
         >
-          <BookOpen className={`w-5 h-5 ${currentView === 'baca' && !isProfileOpen ? 'stroke-[2.5] text-stone-900' : 'stroke-[1.75]'}`} />
+          <BookOpen className={`w-5 h-5 ${currentView === 'baca' && !isProfileOpen ? 'stroke-[2.5] text-slate-950' : 'stroke-[1.75] text-slate-400'}`} />
           <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">Ruang Baca</span>
         </button>
 
@@ -99,21 +99,17 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           onClick={onOpenProfile}
           className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer ${
             isProfileOpen
-              ? 'text-stone-950 font-bold bg-stone-100/90 shadow-2xs'
-              : 'text-stone-500 hover:text-stone-800'
+              ? 'text-slate-950 font-semibold bg-slate-100/90 shadow-2xs'
+              : 'text-slate-400 hover:text-slate-700'
           }`}
         >
           <div className="relative flex items-center justify-center">
             {userInitials ? (
-              <div className={`w-5 h-5 rounded-md flex items-center justify-center font-mono text-[9px] font-bold shadow-2xs transition-all ${
-                isProfileOpen 
-                  ? 'bg-amber-500 text-white ring-1 ring-amber-600' 
-                  : 'bg-stone-800 text-white'
-              }`}>
+              <div className="bg-slate-950 text-white text-[10px] font-bold rounded-md px-1.5 py-0.5 font-mono shadow-xs">
                 {userInitials.slice(0, 2)}
               </div>
             ) : (
-              <User className={`w-5 h-5 ${isProfileOpen ? 'stroke-[2.5] text-stone-900' : 'stroke-[1.75]'}`} />
+              <User className={`w-5 h-5 ${isProfileOpen ? 'stroke-[2.5] text-slate-950' : 'stroke-[1.75] text-slate-400'}`} />
             )}
           </div>
           <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">Profil</span>

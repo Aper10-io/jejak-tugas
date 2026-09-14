@@ -138,21 +138,20 @@ export const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({
         type="button"
         id="datepicker-trigger-btn"
         onClick={() => setIsOpen(prev => !prev)}
-        style={{ borderColor: '#E2E8F0' }}
-        className={`w-full flex items-center justify-between gap-2.5 bg-white text-slate-700 font-medium rounded-lg text-sm py-2 px-3.5 transition-all duration-150 border hover:border-slate-300 hover:bg-slate-50/70 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-400 cursor-pointer ${
-          isOpen ? 'ring-2 ring-stone-900/10 border-stone-400 bg-white' : ''
+        className={`w-full flex items-center justify-between gap-2.5 bg-white text-slate-800 font-medium rounded-xl text-sm py-2 px-3.5 transition-all duration-150 border border-slate-200 shadow-sm hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 cursor-pointer ${
+          isOpen ? 'ring-2 ring-amber-500/20 border-amber-500/50 bg-white' : ''
         }`}
       >
         <div className="flex items-center gap-2.5 min-w-0 truncate">
           <CalendarIcon className="w-4 h-4 text-slate-500 shrink-0" />
-          <span className="truncate text-slate-700 font-medium">
+          <span className="truncate text-slate-800 font-medium">
             {formatDisplay(value)}
           </span>
         </div>
 
         <ChevronDown 
-          className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
-            isOpen ? 'rotate-180 text-stone-900' : ''
+          className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+            isOpen ? 'rotate-180 text-amber-500' : ''
           }`} 
         />
       </button>
@@ -161,12 +160,12 @@ export const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({
       {isOpen && (
         <div
           id="datepicker-popover-card"
-          className="absolute left-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-100 shadow-2xl z-50 p-4 animate-in fade-in zoom-in-95 duration-150 origin-top-left"
+          className="absolute left-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-100 shadow-2xl z-50 p-4 animate-in fade-in zoom-in-95 duration-150 origin-top-left text-slate-800"
         >
           {/* Header Month/Year Navigation */}
           <div className="flex items-center justify-between mb-3 px-1">
-            <h4 className="font-bold text-slate-800 text-sm">
-              {MONTH_NAMES[viewMonth]} <span className="text-slate-500 font-normal">{viewYear}</span>
+            <h4 className="font-bold text-slate-900 text-sm">
+              {MONTH_NAMES[viewMonth]} <span className="text-slate-400 font-normal">{viewYear}</span>
             </h4>
             
             <div className="flex items-center gap-1">
@@ -225,11 +224,11 @@ export const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({
                   key={`cur-${dayNum}`}
                   type="button"
                   onClick={() => handleSelectDay(dayNum)}
-                  className={`h-8 w-full flex items-center justify-center rounded-lg text-xs font-medium transition-all duration-150 relative cursor-pointer ${
+                  className={`h-8 w-full flex items-center justify-center rounded-xl text-xs font-medium transition-all duration-150 relative cursor-pointer ${
                     isSelected
-                      ? 'bg-stone-900 text-white font-bold shadow-xs'
+                      ? 'bg-amber-500 text-white font-bold shadow-xs'
                       : isToday
-                      ? 'bg-amber-50 text-amber-900 font-bold border border-amber-300 hover:bg-amber-100'
+                      ? 'bg-amber-50/70 text-amber-900 font-bold border border-amber-300 hover:bg-amber-100'
                       : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
@@ -243,25 +242,25 @@ export const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({
           </div>
 
           {/* Quick Shortcuts Footer */}
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-1.5 text-xs">
+          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
             <button
               type="button"
               onClick={() => handleSetQuickDate(0)}
-              className="flex-1 py-1.5 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-center transition-colors cursor-pointer"
+              className="flex-1 py-2 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-center transition-colors cursor-pointer"
             >
               Hari Ini
             </button>
             <button
               type="button"
               onClick={() => handleSetQuickDate(1)}
-              className="flex-1 py-1.5 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-center transition-colors cursor-pointer"
+              className="flex-1 py-2 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-center transition-colors cursor-pointer"
             >
               Besok
             </button>
             <button
               type="button"
               onClick={() => handleSetQuickDate(3)}
-              className="flex-1 py-1.5 px-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-center transition-colors cursor-pointer"
+              className="flex-1 py-2 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-center transition-colors cursor-pointer"
             >
               +3 Hari
             </button>

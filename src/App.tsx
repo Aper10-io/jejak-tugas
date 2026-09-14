@@ -46,19 +46,29 @@ const initOrUpdateStreak = (): StreakData => {
     const raw = localStorage.getItem('jejak_streak_data');
     if (!raw) {
       const initial: StreakData = {
-        count: 1,
+        count: 0,
         lastLoginDate: today,
         history: [today],
-        bestStreak: 1
+        bestStreak: 0
       };
       localStorage.setItem('jejak_streak_data', JSON.stringify(initial));
       return initial;
     }
 
     const data: StreakData = JSON.parse(raw);
-    const prevCount = typeof data.count === 'number' && data.count > 0 ? data.count : 1;
-    const prevBest = typeof data.bestStreak === 'number' && data.bestStreak > 0 ? data.bestStreak : prevCount;
-    const history = Array.isArray(data.history) ? data.history : [data.lastLoginDate || today];
+    const prevCount = typeof data.count === 'number' && data.count >= 0 ? data.count : 0;
+    const prevBest = typeof data.bestStreak === 'number' && data.bestStreak >= 0 ? data.bestStreak : prevCount;
+    const history = Array.isArray(data.history) ? data.history : (data.lastLoginDate ? [data.lastLoginDate] : [today]);
+
+    // If initial streak is 0, remain 0 until first task/timer activation
+    if (prevCount === 0) {
+      return {
+        count: 0,
+        lastLoginDate: data.lastLoginDate || today,
+        history: history.includes(today) ? history : [...history, today],
+        bestStreak: prevBest
+      };
+    }
 
     // Already checked in today
     if (data.lastLoginDate === today) {
@@ -94,10 +104,10 @@ const initOrUpdateStreak = (): StreakData => {
     return resetData;
   } catch {
     const fallback: StreakData = {
-      count: 1,
+      count: 0,
       lastLoginDate: today,
       history: [today],
-      bestStreak: 1
+      bestStreak: 0
     };
     return fallback;
   }
@@ -130,6 +140,33 @@ export default function App() {
     }
   });
 
+  // App Usage (Screen Time / Tab Open Time in seconds)
+  const [appUsageSeconds, setAppUsageSeconds] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('app_usage_time_seconds');
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        return !isNaN(parsed) && parsed >= 0 ? parsed : 0;
+      }
+      return 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  // First Joined Date
+  const [firstJoinedDate, setFirstJoinedDate] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('jejak_first_joined_date');
+      if (saved) return saved;
+      const nowIso = new Date().toISOString();
+      localStorage.setItem('jejak_first_joined_date', nowIso);
+      return nowIso;
+    } catch {
+      return new Date().toISOString();
+    }
+  });
+
   // Modals & Active State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -153,6 +190,58 @@ export default function App() {
       return 'JT';
     }
   });
+
+  // Keep a ref to the latest appUsageSeconds so event handlers have current value without tearing down the timer effect
+  const appUsageSecondsRef = useRef(appUsageSeconds);
+  useEffect(() => {
+    appUsageSecondsRef.current = appUsageSeconds;
+  }, [appUsageSeconds]);
+
+  // 1. App Usage Real-Time Tracker with Visibility State Pause
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible' && !document.hidden) {
+        setAppUsageSeconds(prev => {
+          const next = prev + 1;
+          if (next % 5 === 0) {
+            try {
+              localStorage.setItem('app_usage_time_seconds', String(next));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          return next;
+        });
+      }
+    }, 1000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        try {
+          localStorage.setItem('app_usage_time_seconds', String(appUsageSecondsRef.current));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      try {
+        localStorage.setItem('app_usage_time_seconds', String(appUsageSecondsRef.current));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   const handleUpdateUserName = (name: string) => {
     setUserName(name);
@@ -219,6 +308,24 @@ export default function App() {
         if (t.id === taskId) {
           const nextStatus = t.status === 'completed' ? 'pending' : 'completed';
           const isNowCompleted = nextStatus === 'completed';
+
+          // If completing first task and streak was 0, trigger streak 1
+          if (isNowCompleted && streakData.count === 0) {
+            const today = getTodayDateString();
+            const updated: StreakData = {
+              count: 1,
+              lastLoginDate: today,
+              history: streakData.history.includes(today) ? streakData.history : [...streakData.history, today],
+              bestStreak: Math.max(streakData.bestStreak, 1)
+            };
+            setStreakData(updated);
+            try {
+              localStorage.setItem('jejak_streak_data', JSON.stringify(updated));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+
           return {
             ...t,
             status: nextStatus,
@@ -277,6 +384,16 @@ export default function App() {
     showToast('Catatan berhasil disimpan');
   };
 
+  const handleUpdateTask = (updatedTask: TaskItem) => {
+    setTasks(prev =>
+      prev.map(t => (t.id === updatedTask.id ? updatedTask : t))
+    );
+    if (readingTask && readingTask.id === updatedTask.id) {
+      setReadingTask(updatedTask);
+    }
+    showToast('Perubahan tugas berhasil disimpan');
+  };
+
   const handleAddTask = (newTaskData: Omit<TaskItem, 'id' | 'createdAt'>) => {
     const created: TaskItem = {
       ...newTaskData,
@@ -311,6 +428,22 @@ export default function App() {
     if (type === 'break') {
       showToast('⏰ Waktu istirahat selesai! Siap untuk kembali fokus belajar.');
     } else {
+      // First completed focus session activates streak if 0
+      if (streakData.count === 0) {
+        const today = getTodayDateString();
+        const updated: StreakData = {
+          count: 1,
+          lastLoginDate: today,
+          history: streakData.history.includes(today) ? streakData.history : [...streakData.history, today],
+          bestStreak: Math.max(streakData.bestStreak, 1)
+        };
+        setStreakData(updated);
+        try {
+          localStorage.setItem('jejak_streak_data', JSON.stringify(updated));
+        } catch (e) {
+          console.error(e);
+        }
+      }
       showToast('🎉 Sesi fokus tuntas! Kerja bagus, istirahatlah sejenak.');
     }
   };
@@ -319,7 +452,7 @@ export default function App() {
 
   return (
     <FocusTimerProvider tasks={tasks} onTimerComplete={handleTimerComplete}>
-      <div className="min-h-screen w-full bg-stone-100 text-stone-900 font-sans antialiased flex flex-col selection:bg-stone-900 selection:text-white">
+      <div className="min-h-screen w-full bg-[#F8FAFC] text-slate-900 font-sans antialiased flex flex-col selection:bg-cyan-500 selection:text-white">
         
         {/* Top Fixed Header */}
         <TaskNavbar
@@ -345,6 +478,8 @@ export default function App() {
           userInitials={userInitials}
           onUpdateUserInitials={handleUpdateUserInitials}
           onOpenMobileProfile={() => setIsProfileModalOpen(true)}
+          firstJoinedDate={firstJoinedDate}
+          appUsageSeconds={appUsageSeconds}
         />
 
         {/* Main Content Area */}
@@ -447,6 +582,8 @@ export default function App() {
           onUpdateUserName={handleUpdateUserName}
           userInitials={userInitials}
           onUpdateUserInitials={handleUpdateUserInitials}
+          firstJoinedDate={firstJoinedDate}
+          appUsageSeconds={appUsageSeconds}
         />
 
         <AddTaskModal
@@ -461,6 +598,7 @@ export default function App() {
           onToggleStatus={handleToggleStatus}
           onToggleSubtask={handleToggleSubtask}
           onUpdateNotes={handleUpdateNotes}
+          onUpdateTask={handleUpdateTask}
           onDeleteTask={(task) => {
             setReadingTask(null);
             setTaskToDelete(task);
@@ -486,4 +624,3 @@ export default function App() {
     </FocusTimerProvider>
   );
 }
-

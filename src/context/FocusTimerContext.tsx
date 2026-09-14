@@ -42,6 +42,7 @@ interface FocusTimerContextType {
   pauseTimer: () => void;
   toggleTimer: () => void;
   resetTimer: () => void;
+  resetAllTimerStats: () => void;
   dismissFinishedAlert: () => void;
 }
 
@@ -200,41 +201,55 @@ export const FocusTimerProvider: React.FC<FocusTimerProviderProps> = ({
     }
   };
 
-  // Main countdown interval based on targetEndTime
+  // Main countdown interval based on targetEndTime with high-precision sub-second ticker
   useEffect(() => {
-    if (isRunning) {
-      timerRef.current = setInterval(() => {
-        if (targetEndTime) {
-          const now = Date.now();
-          const remaining = Math.max(0, Math.round((targetEndTime - now) / 1000));
-          setTimeLeft(remaining);
-
-          if (remaining <= 0) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            handleSessionFinished(mode);
-          }
-        } else {
-          // Fallback decrement
-          setTimeLeft(prev => {
-            if (prev <= 1) {
-              if (timerRef.current) clearInterval(timerRef.current);
-              handleSessionFinished(mode);
-              return 0;
-            }
-            return prev - 1;
-          });
-        }
-      }, 1000);
-    } else if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
+    if (!isRunning || !targetEndTime) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
     }
+
+    const checkTime = () => {
+      const now = Date.now();
+      const remaining = Math.max(0, Math.ceil((targetEndTime - now) / 1000));
+
+      setTimeLeft(prev => (prev !== remaining ? remaining : prev));
+
+      if (remaining <= 0) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        handleSessionFinished(mode);
+      }
+    };
+
+    // Immediate check on start to avoid 1-second lag
+    checkTime();
+
+    // High precision ticker (every 200ms ensures exact second boundary without drift)
+    timerRef.current = setInterval(checkTime, 200);
+
+    // Sync immediately when tab becomes visible or window gains focus
+    const handleVisibilitySync = () => {
+      if (document.visibilityState === 'visible') {
+        checkTime();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilitySync);
+    window.addEventListener('focus', handleVisibilitySync);
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      document.removeEventListener('visibilitySync', handleVisibilitySync as any);
+      document.removeEventListener('visibilitychange', handleVisibilitySync);
+      window.removeEventListener('focus', handleVisibilitySync);
     };
   }, [isRunning, targetEndTime, mode, onTimerComplete]);
 
@@ -251,16 +266,20 @@ export const FocusTimerProvider: React.FC<FocusTimerProviderProps> = ({
   };
 
   const startTimer = () => {
-    const currentDuration = timeLeft > 0 ? timeLeft : TIMER_CONFIGS[mode].duration;
-    const end = Date.now() + currentDuration * 1000;
+    const duration = timeLeft > 0 ? timeLeft : TIMER_CONFIGS[mode].duration;
+    const end = Date.now() + duration * 1000;
     setTargetEndTime(end);
-    setTimeLeft(currentDuration);
+    setTimeLeft(duration);
     setIsRunning(true);
     setIsFinishedAlert(false);
   };
 
   const pauseTimer = () => {
     setIsRunning(false);
+    if (targetEndTime) {
+      const remaining = Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000));
+      setTimeLeft(remaining);
+    }
     setTargetEndTime(null);
   };
 
@@ -275,6 +294,14 @@ export const FocusTimerProvider: React.FC<FocusTimerProviderProps> = ({
   const resetTimer = () => {
     setIsRunning(false);
     setTargetEndTime(null);
+    setTimeLeft(TIMER_CONFIGS[mode].duration);
+    setIsFinishedAlert(false);
+  };
+
+  const resetAllTimerStats = () => {
+    setIsRunning(false);
+    setTargetEndTime(null);
+    setCompletedSessions(0);
     setTimeLeft(TIMER_CONFIGS[mode].duration);
     setIsFinishedAlert(false);
   };
@@ -313,6 +340,7 @@ export const FocusTimerProvider: React.FC<FocusTimerProviderProps> = ({
         pauseTimer,
         toggleTimer,
         resetTimer,
+        resetAllTimerStats,
         dismissFinishedAlert
       }}
     >

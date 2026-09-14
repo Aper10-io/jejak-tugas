@@ -12,6 +12,8 @@ interface ProfileModalProps {
   onUpdateUserName: (name: string) => void;
   userInitials?: string;
   onUpdateUserInitials?: (initials: string) => void;
+  firstJoinedDate?: string;
+  appUsageSeconds?: number;
 }
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({
@@ -22,7 +24,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   userName,
   onUpdateUserName,
   userInitials = 'JT',
-  onUpdateUserInitials
+  onUpdateUserInitials,
+  firstJoinedDate,
+  appUsageSeconds = 0
 }) => {
   const dragControls = useDragControls();
 
@@ -71,7 +75,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0.05, bottom: 0.65 }}
             onDragEnd={handleDragEnd}
-            className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-100 p-5 sm:p-6 max-h-[88vh] sm:max-h-[85vh] flex flex-col overflow-hidden"
+            className="relative w-full max-w-lg sm:max-w-xl bg-white text-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 p-5 sm:p-6 max-h-[88vh] sm:max-h-[85vh] flex flex-col overflow-hidden"
           >
             {/* Top Interactive Drag Handle Bar (Touch / Pointer zone) */}
             <div
@@ -94,6 +98,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               userInitials={userInitials}
               onUpdateUserInitials={onUpdateUserInitials}
               onClose={onClose}
+              firstJoinedDate={firstJoinedDate}
+              appUsageSeconds={appUsageSeconds}
             />
           </motion.div>
 
